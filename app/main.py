@@ -3,6 +3,8 @@ from app.api.v1.endpoints.audit import (router as audit_router)
 from app.api.v1.endpoints.plan import (router as plan_router)
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import Base, engine
+from app.api.v1.endpoints import auth
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,7 +20,7 @@ app.add_middleware(
 
 app.include_router(audit_router, prefix="/audits", tags=["Audits"])
 app.include_router(plan_router, prefix="/plan", tags=["Plan"])
-
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 @app.get("/")
 def root():
