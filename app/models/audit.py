@@ -21,11 +21,13 @@ class Audit(Base):
     urgence = Column(String(50), nullable=False)
     fichier_attache = Column(String(255), nullable=True)  # Stocke le chemin du fichier
 
+    """
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     requester = relationship("User", back_populates="audits")
+"""
 
     def __repr__(self):
-        return f"<Audit(id={self.id}, type_audit={self.type_audit}, etat={self.etat})>"
+        return f"<Audit(id={self.id}, etat={self.etat})>"
 
 
     """
