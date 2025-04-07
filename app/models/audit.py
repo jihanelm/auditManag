@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from datetime import date
@@ -19,15 +19,24 @@ class Audit(Base):
     description = Column(String(500), nullable=False)
     objectif = Column(String(500), nullable=False)
     urgence = Column(String(50), nullable=False)
-    fichier_attache = Column(String(255), nullable=True)  # Stocke le chemin du fichier
+    domain_name = Column(String(100), nullable=False)
+    fichier_attache = Column(String(255), nullable=True)
+    pdf_report_path = Column(String(255), nullable=True)
+
+    affects = relationship("Affect", back_populates="audit")
+    plans = relationship("Plan", back_populates="audit")
+
+    def __repr__(self):
+        return f"<Audit(id={self.id}, etat={self.etat})>"
+
+
 
     """
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     requester = relationship("User", back_populates="audits")
 """
 
-    def __repr__(self):
-        return f"<Audit(id={self.id}, etat={self.etat})>"
+
 
 
     """

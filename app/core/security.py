@@ -1,3 +1,4 @@
+"""
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
@@ -30,3 +31,4 @@ def has_role(required_role: str):
             raise HTTPException(status_code=403, detail="Accès interdit")
         return user_info
     return role_checker
+"""

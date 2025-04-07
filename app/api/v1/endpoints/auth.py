@@ -1,3 +1,4 @@
+"""
 from fastapi import APIRouter, Depends
 from app.core.security import verify_token, has_role
 
@@ -10,3 +11,4 @@ def get_user(user_info: dict = Depends(verify_token)):
 @router.get("/admin")
 def admin_access(user_info: dict = Depends(has_role("admin"))):
     return {"message": f"Accès Admin autorisé, bienvenue {user_info['preferred_username']}"}
+"""

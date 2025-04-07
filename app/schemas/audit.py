@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseModel, EmailStr
 from datetime import date
 from typing import Optional
@@ -12,6 +14,7 @@ class AuditBase(BaseModel):
     description: str
     objectif: str
     urgence: str
+    domain_name: str
     fichier_attache: Optional[str] = None
 
 """
@@ -23,6 +26,14 @@ class AuditResponse(AuditBase):
     id: int
     date_creation: date
     etat: str
+    pdf_report_path: Optional[str] = None
+
+    @property
+    def fichier_url(self):
+        if self.fichier_attache:
+            # Remplace les backslashes par des slashes pour une URL correcte
+            return f"http://localhost:8000/{self.fichier_attache.replace(os.sep, '/')}"
+        return None
 
     class Config:
         from_attributes = True
