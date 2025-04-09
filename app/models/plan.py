@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -15,6 +15,8 @@ class Plan(Base):
     date_fin = Column(Date, nullable=False)
     status = Column(String(50), nullable=False)
     remarques = Column(String(255), nullable=True)
+
+    #extra_data = Column(JSON, nullable=True) # Pour stocker les nouveaux colonnes dynamiques
 
     audit_id = Column(Integer, ForeignKey("audits.id"), nullable=True)
     audit = relationship("Audit", back_populates="plans")

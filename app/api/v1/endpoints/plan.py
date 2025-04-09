@@ -11,7 +11,7 @@ from starlette.responses import FileResponse
 from app.core.database import get_db
 from app.models.audit import Audit
 from app.models.plan import Plan
-from app.schemas.plan import PlanBase, PlanResponse
+from app.schemas.plan import PlanResponse
 from app.services.plan import export_plans_to_excel, get_filtered_plans
 
 from log_config import setup_logger
@@ -28,6 +28,10 @@ async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db
     try:
         contents = await file.read()
         df = pd.read_excel(BytesIO(contents))
+
+        #columns_fixes = {"ref", "type_audit", "date_debut", "duree", "date_fin", "status", "remarques",
+                         #"date_realisation"}
+        #colonnes_dynamiques = set(df.columns) - columns_fixes
 
         required_columns = {"ref", "type_audit", "date_debut", "duree", "date_fin", "status", "remarques", "date_realisation"}
         if not required_columns.issubset(df.columns):
@@ -49,6 +53,19 @@ async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db
                 status=row["status"],
                 remarques=row.get("remarques"),
             )
+            """
+            plan = Plan(
+                ref=row["ref"],
+                type_audit=row["type_audit"],
+                date_debut=row["date_debut"],
+                date_realisation=row.get("date_realisation"),
+                duree=row["duree"],
+                date_fin=row["date_fin"],
+                status=row["status"],
+                remarques=row.get("remarques"),
+                extra_data=extra_data
+            )
+            """
             plans_to_insert.append(plan)
 
         db.bulk_save_objects(plans_to_insert)
@@ -112,6 +129,22 @@ def get_plans(
     )
 
     return plans
+
+"""@router.patch("/plans/{plan_id}/add_field")
+def add_custom_field(plan_id: int, key: str, value: str, db: Session = Depends(get_db)):
+    plan = db.query(Plan).filter(Plan.id == plan_id).first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan non trouvé")
+
+    if not plan.extra_data:
+        plan.extra_data = {}
+
+    plan.extra_data[key] = value
+    db.commit()
+    db.refresh(plan)
+
+    return {"message": "Champ personnalisé ajouté", "extra_data": plan.extra_data}"""
+
 
 
 """

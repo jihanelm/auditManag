@@ -25,8 +25,9 @@ def export_plans_to_excel(db: Session, month: int = None, year: int = None):
     if not plans:
         return None
 
-    data = [
-        {
+    data = []
+    for plan in plans:
+        row = {
             "ID": plan.id,
             "Référence": plan.ref,
             "Type Audit": plan.type_audit,
@@ -38,8 +39,13 @@ def export_plans_to_excel(db: Session, month: int = None, year: int = None):
             "Remarques": plan.remarques,
             "Audit ID": plan.audit_id,
         }
-        for plan in plans
-    ]
+
+        # Ajoute les colonnes dynamiques
+        if plan.extra_data:
+            for key, value in plan.extra_data.items():
+                row[key] = value
+
+        data.append(row)
 
     df = pd.DataFrame(data)
     file_path = f"plans_{year}_{month}.xlsx" if month else f"plans_{year}.xlsx"

@@ -1,11 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
-import logging
 from dotenv import load_dotenv
 import os
+
+from log_config import setup_logger
+
+logger = setup_logger()
 
 load_dotenv()
 
@@ -26,9 +27,9 @@ Base = declarative_base()
 
 try:
     with engine.connect() as connection:
-        logging.info(f"DB_USER: {DB_USER}, DB_HOST: {DB_HOST}, DB_NAME: {DB_NAME}")
+        logger.info(f"DB_USER: {DB_USER}, DB_HOST: {DB_HOST}, DB_NAME: {DB_NAME}")
 except Exception as e:
-    logging.error(f"Erreur lors de la connexion à la base de données : {e}")
+    logger.error(f"Erreur lors de la connexion à la base de données : {e}")
     raise
 
 def get_db():
