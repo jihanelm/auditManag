@@ -17,7 +17,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,4 +36,4 @@ app.mount("/affectations_pdfs", StaticFiles(directory="affectations_pdfs"), name
 
 @app.get("/")
 def root():
-    return {"message": "Bienvenue sur l'API de gestion des audits"}
+    return {"message": "Bienvenue sur l'APP de gestion des audits"}

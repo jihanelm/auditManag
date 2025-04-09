@@ -8,6 +8,9 @@ from app.models.plan import Plan
 from app.schemas.audit import AuditBase, AuditResponse
 from app.schemas.plan import PlanBase, PlanResponse
 
+from log_config import setup_logger
+
+logger = setup_logger()
 
 def export_plans_to_excel(db: Session, month: int = None, year: int = None):
     query = db.query(Plan)

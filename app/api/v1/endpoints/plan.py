@@ -14,104 +14,51 @@ from app.models.plan import Plan
 from app.schemas.plan import PlanBase, PlanResponse
 from app.services.plan import export_plans_to_excel, get_filtered_plans
 
+from log_config import setup_logger
+
+logger = setup_logger()
+
 router = APIRouter()
 
 @router.post("/upload")
 async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    # Vérifier le type de fichier
     if not file.filename.endswith((".xls", ".xlsx")):
         raise HTTPException(status_code=400, detail="Format de fichier non supporté. Veuillez uploader un fichier Excel.")
-
-    """# Lire le fichier Excel avec pandas
-    contents = await file.read()
-    df = pd.read_excel(BytesIO(contents))
-
-    # Vérifier que les colonnes essentielles existent
-    required_columns = {"ref", "type_audit", "date_debut", "duree", "date_fin", "status", "date_realisation", "remarques"}
-    if not required_columns.issubset(df.columns):
-        raise HTTPException(status_code=400, detail=f"Le fichier doit contenir les colonnes {required_columns}")
-
-    # Insérer les données dans la base
-    plans_to_insert = []
-    for _, row in df.iterrows():
-        plan = Plan(
-            ref=row["ref"],
-            type_audit=row["type_audit"],
-            date_debut=row["date_debut"],
-            date_realisation=row.get("date_realisation"),
-            duree=row["duree"],
-            date_fin=row["date_fin"],
-            status=row["status"],
-            remarques=row.get("remarques"),
-        )
-        plans_to_insert.append(plan)
-
-    db.bulk_save_objects(plans_to_insert)
-    db.commit()
-
-    return {"message": f"{len(plans_to_insert)} plans enregistrés avec succès !"}"""
 
     try:
         contents = await file.read()
         df = pd.read_excel(BytesIO(contents))
-        print(df.head())  # Debugging output
 
-        # Check if required columns exist
         required_columns = {"ref", "type_audit", "date_debut", "duree", "date_fin", "status", "remarques", "date_realisation"}
         if not required_columns.issubset(df.columns):
-            raise HTTPException(status_code=400, detail=f"Missing columns: {required_columns - set(df.columns)}")
+            raise HTTPException(status_code=400, detail=f"Colonnes manquantes: {required_columns - set(df.columns)}")
 
-            # Insérer les données dans la base
-            plans_to_insert = []
-            for _, row in df.iterrows():
-                plan = Plan(
-                    ref=row["ref"],
-                    type_audit=row["type_audit"],
-                    date_debut=row["date_debut"],
-                    date_realisation=row.get("date_realisation"),
-                    duree=row["duree"],
-                    date_fin=row["date_fin"],
-                    status=row["status"],
-                    remarques=row.get("remarques"),
-                )
-                plans_to_insert.append(plan)
+        # Supprimer les anciens plans si besoin :
+        # db.query(Plan).delete()
+        # db.commit()
 
-            db.bulk_save_objects(plans_to_insert)
-            db.commit()
+        plans_to_insert = []
+        for _, row in df.iterrows():
+            plan = Plan(
+                ref=row["ref"],
+                type_audit=row["type_audit"],
+                date_debut=row["date_debut"],
+                date_realisation=row.get("date_realisation"),
+                duree=row["duree"],
+                date_fin=row["date_fin"],
+                status=row["status"],
+                remarques=row.get("remarques"),
+            )
+            plans_to_insert.append(plan)
+
+        db.bulk_save_objects(plans_to_insert)
+        db.commit()
+
+        return {"message": f"{len(plans_to_insert)} plans enregistrés avec succès !"}
 
     except Exception as e:
-        print("Error reading file:", str(e))
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la lecture du fichier: {str(e)}")
-
-    return {"message": "File uploaded successfully"}
-
-@router.get("/plans/", response_model=List[PlanResponse])
-def get_plans(
-    db: Session = Depends(get_db),
-    month: Optional[int] = Query(None, ge=1, le=12),
-    year: Optional[int] = Query(None, ge=2000, le=2100),
-    type_audit: Optional[str] = None,
-    status: Optional[str] = None,
-):
-    """
-    Récupère tous les plans avec possibilité de filtrer par :
-    - Mois
-    - Année
-    - Type d'audit
-    - Statut
-    """
-    query = db.query(Plan)
-
-    if year:
-        query = query.filter(extract('year', Plan.date_debut) == year)
-    if month:
-        query = query.filter(extract('month', Plan.date_debut) == month)
-    if type_audit:
-        query = query.filter(Plan.type_audit == type_audit)
-    if status:
-        query = query.filter(Plan.status == status)
-
-    return query.all()
+        print("Erreur lors de l'upload:", str(e))
+        raise HTTPException(status_code=500, detail=f"Erreur de traitement du fichier: {str(e)}")
 
 
 @router.put("/plans/{plan_id}/associate_audit/{audit_id}")

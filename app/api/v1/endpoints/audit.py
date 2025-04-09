@@ -6,6 +6,10 @@ from app.schemas.audit import AuditResponse
 from app.models.audit import Audit
 from app.services.audit import create_audit, get_all_audits, get_audit_by_id, save_uploaded_file
 
+from log_config import setup_logger
+
+logger = setup_logger()
+
 router = APIRouter()
 
 @router.post("/request", response_model=AuditResponse)

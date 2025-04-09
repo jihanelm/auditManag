@@ -1,14 +1,17 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+
+from app.schemas.ports import PortSchema, PortResponse
 
 
 class IPSchema(BaseModel):
     adresse_ip: str
-    port: int
+    ports: List[PortSchema]
 class IPResponse(IPSchema):
     id: Optional[int]
-    status: str
+    """status: str"""
     affect_id: int
+    ports: List[PortResponse]
 
     class Config:
         from_attributes = True

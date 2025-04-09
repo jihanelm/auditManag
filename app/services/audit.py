@@ -8,6 +8,10 @@ from app.models.audit import Audit
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
+from log_config import setup_logger
+
+logger = setup_logger()
+
 UPLOAD_DIR = "uploads"
 PDF_DIR = "pdf_reports"
 os.makedirs(UPLOAD_DIR, exist_ok=True)

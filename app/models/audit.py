@@ -28,26 +28,3 @@ class Audit(Base):
 
     def __repr__(self):
         return f"<Audit(id={self.id}, etat={self.etat})>"
-
-
-
-    """
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    requester = relationship("User", back_populates="audits")
-"""
-
-
-
-
-    """
-    auditorIn_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    auditorEx_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    prestataire_id = Column(Integer, ForeignKey("prestataires.id"), nullable=False)
-    flux_id = Column(Integer, ForeignKey("flux.id"), nullable=False)
-
-    auditor_in = relationship("User", foreign_keys=[auditorIn_id])
-    auditor_ex = relationship("User", foreign_keys=[auditorEx_id])
-    prestataire = relationship("Prestataire")
-    flux = relationship("Flux")
-    
-    """

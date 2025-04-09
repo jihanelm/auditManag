@@ -9,7 +9,6 @@ class IP(Base):
     id = Column(Integer, primary_key=True, index=True)
     affect_id = Column(Integer, ForeignKey("affects.id"), nullable=False)
     adresse_ip = Column(String(50), nullable=False)
-    port = Column(Integer, nullable=False)
-    status = Column(String(20), nullable=False, default="open")
 
     affect = relationship("Affect", secondary=affect_ip, back_populates="ips")
+    ports = relationship("Port", back_populates="ip", cascade="all, delete-orphan")
