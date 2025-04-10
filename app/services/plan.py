@@ -1,6 +1,8 @@
+from io import BytesIO
 from typing import Optional
 
 import pandas as pd
+from fastapi import HTTPException, UploadFile
 from sqlalchemy import extract
 from sqlalchemy.orm import Session
 from app.models.audit import Audit
@@ -11,6 +13,43 @@ from app.schemas.plan import PlanBase, PlanResponse
 from log_config import setup_logger
 
 logger = setup_logger()
+
+async def process_uploaded_plan(file: UploadFile, db: Session):
+    if not file.filename.endswith((".xls", ".xlsx")):
+        raise HTTPException(status_code=400, detail="Format de fichier non supporté. Veuillez uploader un fichier Excel.")
+
+    try:
+        contents = await file.read()
+        df = pd.read_excel(BytesIO(contents))
+
+        required_columns = {"ref", "type_audit", "date_debut", "duree", "date_fin", "status", "remarques", "date_realisation"}
+        if not required_columns.issubset(df.columns):
+            raise HTTPException(status_code=400, detail=f"Colonnes manquantes: {required_columns - set(df.columns)}")
+
+        plans_to_insert = []
+        for _, row in df.iterrows():
+            plan = Plan(
+                ref=row["ref"],
+                type_audit=row["type_audit"],
+                date_debut=row["date_debut"],
+                date_realisation=row.get("date_realisation"),
+                duree=row["duree"],
+                date_fin=row["date_fin"],
+                status=row["status"],
+                remarques=row.get("remarques"),
+            )
+            plans_to_insert.append(plan)
+
+        db.bulk_save_objects(plans_to_insert)
+        db.commit()
+
+        logger.info("Plans inserted successfully")
+        return ""
+
+    except Exception as e:
+        error_message = str(e.orig) if hasattr(e, 'orig') else str(e)
+        logger.error(f"Erreur lors du traitement du fichier : {error_message}")
+        raise HTTPException(status_code=500, detail=f"Erreur de traitement du fichier")
 
 def export_plans_to_excel(db: Session, month: int = None, year: int = None):
     query = db.query(Plan)

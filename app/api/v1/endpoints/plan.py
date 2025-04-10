@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.models.audit import Audit
 from app.models.plan import Plan
 from app.schemas.plan import PlanResponse
-from app.services.plan import export_plans_to_excel, get_filtered_plans
+from app.services.plan import export_plans_to_excel, get_filtered_plans, process_uploaded_plan
 
 from log_config import setup_logger
 
@@ -21,6 +21,10 @@ logger = setup_logger()
 router = APIRouter()
 
 @router.post("/upload")
+async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    return await process_uploaded_plan(file, db)
+
+"""@router.post("/upload")
 async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db)):
     if not file.filename.endswith((".xls", ".xlsx")):
         raise HTTPException(status_code=400, detail="Format de fichier non supporté. Veuillez uploader un fichier Excel.")
@@ -53,7 +57,7 @@ async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db
                 status=row["status"],
                 remarques=row.get("remarques"),
             )
-            """
+            """"""
             plan = Plan(
                 ref=row["ref"],
                 type_audit=row["type_audit"],
@@ -65,7 +69,7 @@ async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db
                 remarques=row.get("remarques"),
                 extra_data=extra_data
             )
-            """
+            """"""
             plans_to_insert.append(plan)
 
         db.bulk_save_objects(plans_to_insert)
@@ -75,7 +79,7 @@ async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db
 
     except Exception as e:
         print("Erreur lors de l'upload:", str(e))
-        raise HTTPException(status_code=500, detail=f"Erreur de traitement du fichier: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur de traitement du fichier: {str(e)}")"""
 
 
 @router.put("/plans/{plan_id}/associate_audit/{audit_id}")
