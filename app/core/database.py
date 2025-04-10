@@ -27,9 +27,11 @@ Base = declarative_base()
 
 try:
     with engine.connect() as connection:
-        logger.info(f"DB_USER: {DB_USER}, DB_HOST: {DB_HOST}, DB_NAME: {DB_NAME}")
+        logger.debug(f"DB_USER: {DB_USER}, DB_HOST: {DB_HOST}, DB_NAME: {DB_NAME}")
+        logger.info("Connexion etablie avec la base de donnees avec succes")
 except Exception as e:
-    logger.error(f"Erreur lors de la connexion à la base de données : {e}")
+    error_message = str(e.orig) if hasattr(e, 'orig') else str(e)
+    logger.error(f"Erreur lors de la connexion à la base de données : {error_message}")
     raise
 
 def get_db():

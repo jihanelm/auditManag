@@ -1,8 +1,23 @@
 import logging.config
+from logging.handlers import TimedRotatingFileHandler
+from zoneinfo import ZoneInfo
+from datetime import datetime
+import os
+
+
+class MoroccoTimedRotatingFileHandler(TimedRotatingFileHandler):
+    def computeRollover(self, currentTime):
+        # Redéfinir le moment de rotation avec l'heure du Maroc
+        tz = ZoneInfo("Africa/Casablanca")
+        dt = datetime.fromtimestamp(currentTime, tz)
+        return super().computeRollover(dt.timestamp())
+
+if not os.path.exists("logs"):
+    os.makedirs("logs")
 
 LOG_CONFIG = {
     "version": 1,
-    "disable_existing_loggers": False,  # important pour uvicorn
+    "disable_existing_loggers": False,
     "formatters": {
         "default": {
             "format": "[%(asctime)s] [%(levelname)s] %(name)s: %(message)s",
@@ -10,10 +25,12 @@ LOG_CONFIG = {
     },
     "handlers": {
         "file": {
-            "class": "logging.handlers.RotatingFileHandler",
+            "()": MoroccoTimedRotatingFileHandler,
             "filename": "logs/app.log",
-            "maxBytes": 1024*1024*5,
-            "backupCount": 3,
+            "when": "midnight",              # rotation tous les jours à minuit
+            "interval": 1,                   # chaque 1 jour
+            "backupCount": 15,                # garde les 15 derniers fichiers
+            "encoding": "utf-8",
             "formatter": "default",
         },
         "console": {
@@ -30,5 +47,4 @@ LOG_CONFIG = {
 def setup_logger():
     logging.config.dictConfig(LOG_CONFIG)
     logger = logging.getLogger(__name__)
-    logger.info("Logging initialisé avec succès")
     return logger
