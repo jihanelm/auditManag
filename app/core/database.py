@@ -17,8 +17,6 @@ DB_NAME = os.getenv("DB_NAME")
 
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
-
-#DATABASE_URL = os.getenv('DATABASE_URL', 'mysql+pymysql://root:JiKhNa232017*@localhost/audit_db')
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

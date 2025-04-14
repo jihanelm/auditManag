@@ -25,6 +25,7 @@ class AuditCreate(AuditBase):
 class AuditResponse(AuditBase):
     id: int
     date_creation: date
+    type_audit: str
     etat: str
     pdf_report_path: Optional[str] = None
 

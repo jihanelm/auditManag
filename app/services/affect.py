@@ -243,5 +243,6 @@ def update_auditeur(db: Session, auditeur_id: int, auditeur_data: AuditeurSchema
 
     db.commit()
     db.refresh(auditeur)
-    logger.info(f"Auditeur ID {auditeur_id} mis à jour")
+    logger.debug(f"Auditeur ID {auditeur_id} mis à jour")
+    logger.info("Auditeur mis a jour avec succes")
     return auditeur

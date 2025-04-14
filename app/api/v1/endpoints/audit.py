@@ -31,12 +31,6 @@ def create_audit_request(
     logger.info("Réception de la requête de création d'audit par %s %s (%s)", demandeur_prenom, demandeur_nom,
                 demandeur_email)
 
-    """audit = create_audit(
-        user_id, type_audit, demandeur_nom, demandeur_prenom, demandeur_email,
-        demandeur_phone, demandeur_departement, description, objectif, urgence,
-        file_bytes, fichier_name, db
-    )"""
-
     audit = create_audit(
         type_audit, demandeur_nom, demandeur_prenom, demandeur_email,
         demandeur_phone, demandeur_departement, description, objectif, urgence, domain_name,

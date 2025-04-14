@@ -11,7 +11,7 @@ from starlette.responses import FileResponse
 from app.core.database import get_db
 from app.models.audit import Audit
 from app.models.plan import Plan
-from app.schemas.plan import PlanResponse
+from app.schemas.plan import PlanResponse, PlanCreate
 from app.services.plan import export_plans_to_excel, get_filtered_plans, process_uploaded_plan
 
 from log_config import setup_logger
@@ -75,6 +75,15 @@ def get_plans(
     )
 
     return plans
+
+@router.post("/plan/", response_model=PlanResponse)
+def create_plan(plan: PlanCreate, db: Session = Depends(get_db)):
+    db_plan = Plan(**plan.dict())
+    db.add(db_plan)
+    db.commit()
+    db.refresh(db_plan)
+    return db_plan
+
 
 """@router.post("/upload")
 async def upload_plan(file: UploadFile = File(...), db: Session = Depends(get_db)):

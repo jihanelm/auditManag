@@ -79,11 +79,11 @@ def export_plans_to_excel(db: Session, month: int = None, year: int = None):
             "Audit ID": plan.audit_id,
         }
 
-        # Ajoute les colonnes dynamiques
+        """# Ajoute les colonnes dynamiques
         if plan.extra_data:
             for key, value in plan.extra_data.items():
                 row[key] = value
-
+"""
         data.append(row)
 
     df = pd.DataFrame(data)
