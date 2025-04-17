@@ -22,6 +22,18 @@ class PlanCreate(PlanBase):
     audit_id: Optional[int] = None
     extra_data: Optional[Dict[str, Any]] = None
 
+class PlanUpdate(BaseModel):
+    ref: Optional[str] = None
+    type_audit: Optional[str] = None
+    date_debut: Optional[date] = None
+    date_realisation: Optional[date] = None
+    duree: Optional[int] = None
+    date_fin: Optional[date] = None
+    status: Optional[str] = None
+    remarques: Optional[str] = None
+    audit_id: Optional[int] = None
+    extra_data: Optional[Dict[str, str]] = None
+
 class PlanResponse(PlanBase):
     id: int
     ref: str

@@ -5,10 +5,8 @@ import pandas as pd
 from fastapi import HTTPException, UploadFile
 from sqlalchemy import extract
 from sqlalchemy.orm import Session
-from app.models.audit import Audit
 from app.models.plan import Plan
-from app.schemas.audit import AuditBase, AuditResponse
-from app.schemas.plan import PlanBase, PlanResponse
+from app.schemas.plan import PlanUpdate
 
 from log_config import setup_logger
 
@@ -120,32 +118,24 @@ def get_filtered_plans(
 
     return query.all()
 
-
-
-
-
-
-
-
-
-"""def create_plan(db: Session, plan_data: PlanBase) -> PlanResponse:
-    new_plan = Plan(**plan_data.dict())
-    db.add(new_plan)
-    db.commit()
-    db.refresh(new_plan)
-    return new_plan
-
-def get_plan(db: Session, plan_id: int) -> PlanResponse:
-    return db.query(Plan).filter(Plan.id == plan_id).first()
-
-def get_plans_by_month(db: Session, month: int, year: int):
-    return db.query(Plan).filter(Plan.date_realisation.year == year, Plan.date_realisation.month == month).all()
-
-def update_plan_status(db: Session, plan_id: int, status: str):
+def update_plan(db: Session, plan_id: int, updated_data: PlanUpdate):
     plan = db.query(Plan).filter(Plan.id == plan_id).first()
-    if plan:
-        plan.status = status
+
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan non trouvé.")
+
+    try:
+        update_fields = updated_data.dict(exclude_unset=True)
+        for key, value in update_fields.items():
+            setattr(plan, key, value)
+
         db.commit()
         db.refresh(plan)
-    return plan
-"""
+
+        logger.info(f"Plan {plan_id} mis à jour avec succès.")
+        return plan
+
+    except Exception as e:
+        error_message = str(e.orig) if hasattr(e, 'orig') else str(e)
+        logger.error(f"Erreur lors de la mise à jour du plan : {error_message}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la mise à jour du plan.")
