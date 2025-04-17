@@ -20,13 +20,15 @@ v.1.1.0
         - Visualisation
         - Filtration
         - Download
+        - ajout d'un nouveau audit dans le plan (sous forme d'une ligne)
+        - la possibilitee d'ajouter d'une colonne dans le plan
 
     - Not Done yet :
-        - ajout d'un nouveau audit dans le plan (sous forme d'une ligne)
-        - la possibilitee d'ajouter d'une colonne dans le plan 
         - ajout des logs
         - description des API
 
+- Dashboard (faut ajouter d'autre KPIs)
+
 ## Logs
 
-- chaque 24hrs les logs s'archive a minuit (faut checker !!!!)
+- juste les 5 derniers fichiers qui reste (on a commencer le 10/04) (faut checker !!!!)
