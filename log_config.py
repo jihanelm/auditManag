@@ -29,7 +29,7 @@ LOG_CONFIG = {
             "filename": "logs/app.log",
             "when": "midnight",              # rotation tous les jours à minuit
             "interval": 1,                   # chaque 1 jour
-            "backupCount": 15,                # garde les 15 derniers fichiers
+            "backupCount": 5,                # garde les 5 derniers fichiers
             "encoding": "utf-8",
             "formatter": "default",
         },

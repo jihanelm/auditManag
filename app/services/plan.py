@@ -28,6 +28,8 @@ async def process_uploaded_plan(file: UploadFile, db: Session):
 
         plans_to_insert = []
         for _, row in df.iterrows():
+            extra_fields = {col: row[col] for col in df.columns if col not in required_columns}
+
             plan = Plan(
                 ref=row["ref"],
                 type_audit=row["type_audit"],
@@ -37,6 +39,7 @@ async def process_uploaded_plan(file: UploadFile, db: Session):
                 date_fin=row["date_fin"],
                 status=row["status"],
                 remarques=row.get("remarques"),
+                extra_data=extra_fields if extra_fields else None
             )
             plans_to_insert.append(plan)
 
@@ -79,11 +82,10 @@ def export_plans_to_excel(db: Session, month: int = None, year: int = None):
             "Audit ID": plan.audit_id,
         }
 
-        """# Ajoute les colonnes dynamiques
         if plan.extra_data:
             for key, value in plan.extra_data.items():
                 row[key] = value
-"""
+
         data.append(row)
 
     df = pd.DataFrame(data)

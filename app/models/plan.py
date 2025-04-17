@@ -16,6 +16,8 @@ class Plan(Base):
     status = Column(String(50), nullable=False)
     remarques = Column(String(255), nullable=True)
 
+    extra_data = Column(JSON, nullable=True)
+
     audit_id = Column(Integer, ForeignKey("audits.id"))
     audit = relationship("Audit", back_populates="plans")
 

@@ -1,5 +1,5 @@
 from fastapi import Body, Depends, HTTPException, APIRouter
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 from sqlalchemy.orm import Session
 from log_config import setup_logger
 
@@ -34,3 +34,9 @@ def add_plan_column(
         error_message = str(e.orig) if hasattr(e, 'orig') else str(e)
         logger.error(f"Erreur lors de l'ajout de la colonne' : {error_message}")
         raise HTTPException(status_code=500, detail="Erreur lors de l'ajout de la colonne")
+
+@router.get("/plan/columns")
+def get_plan_columns(db: Session = Depends(get_db)):
+    inspector = inspect(db.bind)
+    columns = inspector.get_columns('plans')
+    return [{"name": col['name'], "type": str(col['type'])} for col in columns]
